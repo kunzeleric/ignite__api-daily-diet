@@ -1,11 +1,16 @@
 import { app } from './app'
 import { knex } from './database'
 import { env } from './env'
+import { usersRoutes } from './routes/users'
 
 app.get('/hello', async () => {
   const tables = await knex('sqlite_schema').select('*')
 
   return tables
+})
+
+app.register(usersRoutes, {
+  prefix: 'users',
 })
 
 app
