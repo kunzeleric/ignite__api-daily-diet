@@ -6,7 +6,8 @@ import bcrypt from 'bcrypt'
 
 export const usersRoutes = async (app: FastifyInstance) => {
   // retorna todos usuários
-  app.get('/', async (request, reply) => {
+  app.get('/', { schema: { tags: ['User'] } }, async (request, reply) => {
+    // #swagger.tags = ['User'] => separates all CRUD operations of User Schema
     try {
       const users = await knex('users').select('*')
 
@@ -20,7 +21,8 @@ export const usersRoutes = async (app: FastifyInstance) => {
   })
 
   // cria usuário
-  app.post('/', async (request, reply) => {
+  app.post('/', { schema: { tags: ['User'] } }, async (request, reply) => {
+    // #swagger.tags = ['User'] => separates all CRUD operations of User Schema
     try {
       const createUserBodySchema = z.object({
         name: z.string(),
@@ -52,7 +54,8 @@ export const usersRoutes = async (app: FastifyInstance) => {
   })
 
   // atualização de dados do usuário
-  app.put('/:id', async (request, reply) => {
+  app.put('/:id', { schema: { tags: ['User'] } }, async (request, reply) => {
+    // #swagger.tags = ['User'] => separates all CRUD operations of User Schema
     try {
       const editUserParamsSchema = z.object({
         id: z.string(),
@@ -77,7 +80,8 @@ export const usersRoutes = async (app: FastifyInstance) => {
   })
 
   // login de usuário na API
-  app.post('/login', async (request, reply) => {
+  app.post('/login', { schema: { tags: ['User'] } }, async (request, reply) => {
+    // #swagger.tags = ['User'] => separates all CRUD operations of User Schema
     try {
       const loginUserBodyParams = z.object({
         email: z.string(),
