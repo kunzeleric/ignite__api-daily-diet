@@ -1,6 +1,7 @@
 import { app } from './app'
 import { env } from './env'
 import { routes } from './routes'
+import cookie from '@fastify/cookie'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import cors from '@fastify/cors'
@@ -8,6 +9,8 @@ import cors from '@fastify/cors'
 app.get('/', (req, res) => {
   res.redirect(302, '/docs') // Redireciona para a rota '/docs'
 })
+
+app.register(cookie)
 
 app.register(fastifySwagger, {
   openapi: {
@@ -74,6 +77,76 @@ app.register(fastifySwagger, {
                   },
                 },
                 session_id: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'string',
+                      example: 'string',
+                    },
+                  },
+                },
+                createdAt: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'string',
+                      example: 'string',
+                    },
+                    format: {
+                      type: 'string',
+                      example: 'date-time',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Diet: {
+          type: 'object',
+          properties: {
+            title: {
+              type: 'string',
+              example: 'Diet',
+            },
+            required: {
+              type: 'array',
+              example: ['name', 'descriptions', 'user_id'],
+              items: {
+                type: 'string',
+              },
+            },
+            properties: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'string',
+                      example: 'string',
+                    },
+                  },
+                },
+                name: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'string',
+                      example: 'string',
+                    },
+                  },
+                },
+                descriptions: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'string',
+                      example: 'string',
+                    },
+                  },
+                },
+                user_id: {
                   type: 'object',
                   properties: {
                     type: {

@@ -46,6 +46,8 @@ export const usersRoutes = async (app: FastifyInstance) => {
           email,
           password: hashPassword,
         })
+
+        return reply.status(201).send({ msg: 'User created successfully!' })
       }
     } catch (error) {
       console.error('Failed to create user, try again later: ', error)
@@ -53,7 +55,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
     }
   })
 
-  // atualização de dados do usuário
+  // atualização de dados do usuário com id informado
   app.put('/:id', { schema: { tags: ['User'] } }, async (request, reply) => {
     // #swagger.tags = ['User'] => separates all CRUD operations of User Schema
     try {
@@ -64,18 +66,51 @@ export const usersRoutes = async (app: FastifyInstance) => {
       const editUserBodySchema = z.object({
         name: z.string(),
         email: z.string(),
-        password: z.string(),
       })
 
       const { id } = editUserParamsSchema.parse(request.params)
-      const { name, password, email } = editUserBodySchema.parse(request.body)
+      const { name, email } = editUserBodySchema.parse(request.body)
 
-      await knex('users').update({ name, password, email }).where('id', id)
+      const users = await knex('users').select('*')
 
-      return reply.status(204).send('User updated successfully!')
+      const userExists = users.find((user) => user.id === id)
+
+      if (userExists) {
+        await knex('users').update({ name, email }).where('id', id)
+
+        return reply.status(204).send({ msg: 'User updated successfully!' })
+      } else {
+        return reply.status(400).send('User not found.')
+      }
     } catch (error) {
-      console.error('Failed to update user, try again later.')
+      console.error('Failed to update user, try again later.', error)
       return reply.status(500).send('Failed to update user, try again later.')
+    }
+  })
+
+  // deleta usuário com id informado
+  app.delete('/:id', { schema: { tags: ['User'] } }, async (request, reply) => {
+    try {
+      const deleteUserParamsSchema = z.object({
+        id: z.string(),
+      })
+
+      const { id } = deleteUserParamsSchema.parse(request.params)
+
+      const users = await knex('users').select('*')
+
+      const userExists = users.find((user) => user.id === id)
+
+      if (userExists) {
+        await knex('users').where('id', id).delete()
+
+        return reply.status(204).send({ msg: 'User successfully deleted.' })
+      } else {
+        return reply.status(400).send('User not found.')
+      }
+    } catch (error) {
+      console.error('Failed to delete user, try again later.', error)
+      return reply.status(500).send('Failed to delete user, try again later.')
     }
   })
 
@@ -98,7 +133,16 @@ export const usersRoutes = async (app: FastifyInstance) => {
           userFound[0].password,
         )
         if (passwordCheck) {
-          return reply.status(200).send('User logged in successfully!')
+          let sessionId = request.cookies.sessionId
+          if (!sessionId) {
+            sessionId = randomUUID()
+
+            reply.cookie('sessionId', sessionId, {
+              path: '/',
+              maxAge: 1000 * 60 * 60 * 24 * 7, // 7 dias
+            })
+          }
+          return reply.status(200).send({ msg: 'User logged in successfully!' })
         } else {
           return reply.status(400).send('User not found! Please try again.')
         }
