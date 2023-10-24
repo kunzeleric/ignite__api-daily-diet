@@ -1,16 +1,15 @@
 import { app } from './app'
 import { env } from './env'
-import { routes } from './routes'
 import cookie from '@fastify/cookie'
+import cors from '@fastify/cors'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
-import cors from '@fastify/cors'
-
-app.get('/', (req, res) => {
-  res.redirect(302, '/docs') // Redireciona para a rota '/docs'
-})
+import { usersRoutes } from './routes/users'
+import { mealsRoutes } from './routes/meals'
 
 app.register(cookie)
+
+app.register(cors, { origin: '*' })
 
 app.register(fastifySwagger, {
   openapi: {
@@ -20,7 +19,10 @@ app.register(fastifySwagger, {
       version: '1.0.0',
     },
     servers: [{ url: 'localhost:8080' }],
-    tags: [{ name: 'User', description: 'User Routes' }],
+    tags: [
+      { name: 'User', description: 'User Routes' },
+      { name: 'Meal', description: 'Meal Routes' },
+    ],
     components: {
       schemas: {
         User: {
@@ -102,12 +104,12 @@ app.register(fastifySwagger, {
             },
           },
         },
-        Diet: {
+        Meal: {
           type: 'object',
           properties: {
             title: {
               type: 'string',
-              example: 'Diet',
+              example: 'Meal',
             },
             required: {
               type: 'array',
@@ -212,11 +214,13 @@ app.register(fastifySwaggerUi, {
   transformSpecificationClone: true,
 })
 
-app.register(cors, {
-  origin: '*',
-})
+// rotas
+app.register(usersRoutes, { prefix: '/users' })
+app.register(mealsRoutes, { prefix: '/meals' })
 
-routes(app)
+app.get('/', (req, res) => {
+  res.redirect(302, '/docs') // Redireciona para a rota '/docs'
+})
 
 app.listen(
   {
