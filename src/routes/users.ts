@@ -3,10 +3,17 @@ import { knex } from '../database'
 import { z } from 'zod'
 import { randomUUID } from 'node:crypto'
 import bcrypt from 'bcrypt'
+import {
+  createUser,
+  deleteUser,
+  loginUser,
+  retrieveUsers,
+  updateUser,
+} from '../lib/swagger-schemas/user'
 
 export const usersRoutes = async (app: FastifyInstance) => {
   // retorna todos usuários
-  app.get('/', { schema: { tags: ['User'] } }, async (request, reply) => {
+  app.get('/', retrieveUsers, async (request, reply) => {
     try {
       const users = await knex('users').select('*')
 
@@ -20,7 +27,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
   })
 
   // cria usuário
-  app.post('/', { schema: { tags: ['User'] } }, async (request, reply) => {
+  app.post('/', createUser, async (request, reply) => {
     try {
       const createUserBodySchema = z.object({
         name: z.string(),
@@ -56,15 +63,15 @@ export const usersRoutes = async (app: FastifyInstance) => {
   })
 
   // atualização de dados do usuário com id informado
-  app.put('/:id', { schema: { tags: ['User'] } }, async (request, reply) => {
+  app.put('/:id', updateUser, async (request, reply) => {
     try {
       const editUserParamsSchema = z.object({
         id: z.string(),
       })
 
       const editUserBodySchema = z.object({
-        name: z.string(),
-        email: z.string(),
+        name: z.string().optional(),
+        email: z.string().optional(),
       })
 
       const { id } = editUserParamsSchema.parse(request.params)
@@ -90,7 +97,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
   })
 
   // deleta usuário com id informado
-  app.delete('/:id', { schema: { tags: ['User'] } }, async (request, reply) => {
+  app.delete('/:id', deleteUser, async (request, reply) => {
     try {
       const deleteUserParamsSchema = z.object({
         id: z.string(),
@@ -118,7 +125,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
   })
 
   // login de usuário na API
-  app.post('/login', { schema: { tags: ['User'] } }, async (request, reply) => {
+  app.post('/login', loginUser, async (request, reply) => {
     try {
       const loginUserBodyParams = z.object({
         email: z.string(),

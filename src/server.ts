@@ -18,7 +18,26 @@ app.register(fastifySwagger, {
       description: 'API Documentation for Daily Diet Project',
       version: '1.0.0',
     },
-    servers: [{ url: 'localhost:8080' }],
+    servers: [
+      {
+        url: 'http://localhost:8080',
+        description: 'The production API server',
+        variables: {
+          username: {
+            default: 'demo',
+            description:
+              'this value is assigned by the service provider, in this example `gigantic-server.com`',
+          },
+          port: {
+            enum: ['8080', '4000'],
+            default: '8080',
+          },
+          basePath: {
+            default: 'v2',
+          },
+        },
+      },
+    ],
     tags: [
       { name: 'User', description: 'User Routes' },
       { name: 'Meal', description: 'Meal Routes' },
