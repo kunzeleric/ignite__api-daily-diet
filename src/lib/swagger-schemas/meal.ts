@@ -6,6 +6,22 @@ export const retrieveMeals = {
     tags: ['Meal'],
     summary: 'Get all meals.',
     description: 'Route to get all meals in database.',
+    response: {
+      200: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          meals: { type: 'array' },
+        },
+      },
+      500: {
+        description: 'Internal error response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+    },
   },
   preHandler: [checkUserIdExists],
 }
@@ -16,6 +32,29 @@ export const retrieveMealById = {
     tags: ['Meal'],
     summary: 'Get meal by id.',
     description: 'Route to get a meal by id, required ID in params.',
+    response: {
+      200: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          meal: { type: 'object' },
+        },
+      },
+      400: {
+        description: 'Fail response - meal doesnt exist',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+      500: {
+        description: 'Internal error response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+    },
   },
   preHandler: [checkUserIdExists],
 }
@@ -27,6 +66,29 @@ export const createMeal = {
     summary: 'Create a meal.',
     description:
       'Route to create a meal, required fields in the body such as name, description, is_diet.',
+    response: {
+      201: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          msg: { type: 'string' },
+        },
+      },
+      500: {
+        description: 'Internal error response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+    },
+    body: {
+      name: {
+        type: 'string',
+      },
+      description: { type: 'string' },
+      is_diet: { type: 'boolean' },
+    },
   },
   preHandler: [checkUserIdExists],
 }
@@ -38,6 +100,29 @@ export const updateMeal = {
     summary: 'Update a meal.',
     description:
       'Route to update a meal, information sent through the body. Name, description & is_diet are possible to update.',
+    response: {
+      201: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          msg: { type: 'string' },
+        },
+      },
+      400: {
+        description: 'Fail response - meal doesnt exist',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+        500: {
+          description: 'Internal error response',
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
     body: {
       name: { type: 'string' },
       description: { type: 'string' },
@@ -53,6 +138,63 @@ export const deleteMeal = {
     tags: ['Meal'],
     summary: 'Update a meal.',
     description: 'Route to delete a meal, required ID in the params.',
+    response: {
+      204: {
+        description: 'Succesful response',
+        type: 'object',
+      },
+      400: {
+        description: 'Fail response - meal doesnt exist',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+        500: {
+          description: 'Internal error response',
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+  preHandler: [checkUserIdExists],
+}
+
+// GET MEALS ROUTE
+export const retrieveMealMetrics = {
+  schema: {
+    tags: ['Meal'],
+    summary: 'Get all meal metrics for user.',
+    description:
+      'Route to get meal metrics. It returns an object with 4 properties, such as Quantity of Meals, Meals on Diet, Meals Not On Diet and the Best Diet Sequence.',
+    response: {
+      200: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          quantity: { type: 'integer' },
+          meals_on_diet: { type: 'integer' },
+          meals_not_on_diet: { type: 'integer' },
+          best_sequence: { type: 'integer' },
+        },
+      },
+      400: {
+        description: 'Fail response - no meals registered',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+      500: {
+        description: 'Internal error response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+    },
   },
   preHandler: [checkUserIdExists],
 }

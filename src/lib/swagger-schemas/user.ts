@@ -4,6 +4,22 @@ export const retrieveUsers = {
     description: 'Route to get all users in database.',
     summary: 'Get all users.',
     tags: ['User'],
+    response: {
+      200: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          users: { type: 'array' },
+        },
+      },
+      500: {
+        description: 'Fail response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+    },
   },
 }
 
@@ -18,6 +34,29 @@ export const createUser = {
       name: { type: 'string' },
       email: { type: 'string' },
       password: { type: 'string' },
+    },
+    response: {
+      201: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          msg: { type: 'string' },
+        },
+      },
+      400: {
+        description: 'Fail response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+      500: {
+        description: 'Internal error response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
     },
   },
 }
@@ -34,6 +73,29 @@ export const updateUser = {
       email: { type: 'string' },
       password: { type: 'string' },
     },
+    response: {
+      204: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          msg: { type: 'string' },
+        },
+      },
+      400: {
+        description: 'Fail response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+      500: {
+        description: 'Internal error response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+    },
   },
 }
 
@@ -44,6 +106,29 @@ export const deleteUser = {
       'Route to delete user, required to send User ID through params.',
     tags: ['User'],
     summary: 'Delete user.',
+    response: {
+      204: {
+        description: 'Succesful response',
+        type: 'object',
+        properties: {
+          msg: { type: 'string' },
+        },
+      },
+      400: {
+        description: 'Fail response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+      500: {
+        description: 'Internal error response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+    },
   },
 }
 
@@ -57,6 +142,29 @@ export const loginUser = {
     body: {
       email: { type: 'string' },
       password: { type: 'string' },
+    },
+    response: {
+      200: {
+        description: 'Succesful login',
+        type: 'object',
+        properties: {
+          msg: { type: 'string' },
+        },
+      },
+      400: {
+        description: 'Fail login - user doesnt exist',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
+      500: {
+        description: 'Internal error response',
+        type: 'object',
+        properties: {
+          error: { type: 'string' },
+        },
+      },
     },
   },
 }

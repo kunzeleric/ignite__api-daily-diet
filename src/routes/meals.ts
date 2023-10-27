@@ -2,11 +2,11 @@ import { FastifyInstance } from 'fastify'
 import { knex } from '../database'
 import { randomUUID } from 'crypto'
 import { z } from 'zod'
-import { checkUserIdExists } from '../middlewares/checkUserIdExists'
 import {
   createMeal,
   deleteMeal,
   retrieveMealById,
+  retrieveMealMetrics,
   retrieveMeals,
   updateMeal,
 } from '../lib/swagger-schemas/meal'
@@ -15,16 +15,13 @@ export const mealsRoutes = async (app: FastifyInstance) => {
   // lista todas refeições do usuário
   app.get('/', retrieveMeals, async (request, reply) => {
     try {
-      const { userId } = request.cookies
-
-      const diets = await knex('diet').where('user_id', userId).select()
-
-      return { diets }
+      const meals = await knex('diet').select('*')
+      return { meals }
     } catch (error) {
       console.error('Error listing meals, please try again later.', error)
       return reply
         .status(500)
-        .send({ msg: 'Error listing meals, please try again later.' })
+        .send({ error: 'Error listing meals, please try again later.' })
     }
   })
 
@@ -37,9 +34,18 @@ export const mealsRoutes = async (app: FastifyInstance) => {
 
       const { id } = getMealParamsSchema.parse(request.params)
 
-      const diet = await knex('diet').where('id', id).first()
+      const meals = await knex('diet').select()
+      const mealExists = meals.find((meal) => meal.id === id)
+      if (mealExists) {
+        const { userId } = request.cookies
+        const diet = await knex('diet').where({ id, user_id: userId }).first()
 
-      return { diet }
+        return { diet }
+      } else {
+        return reply.status(400).send({
+          error: "Meal doesn't exist in database. Try checking the ID",
+        })
+      }
     } catch (error) {
       console.error('Error listing meal, please try again later.', error)
       return reply
@@ -71,11 +77,13 @@ export const mealsRoutes = async (app: FastifyInstance) => {
         is_diet,
         user_id: userId,
       })
+
+      return reply.status(201).send({ msg: 'Meal created successfully.' })
     } catch (error) {
       console.error('Error creating meal, please try again later.', error)
       return reply
         .status(500)
-        .send({ msg: 'Error creating meal, please try again later.' })
+        .send({ error: 'Error creating meal, please try again later.' })
     }
   })
 
@@ -120,13 +128,13 @@ export const mealsRoutes = async (app: FastifyInstance) => {
       } else {
         return reply
           .status(400)
-          .send({ msg: "Meal doesn't exist, please validate ID." })
+          .send({ error: "Meal doesn't exist, please validate ID." })
       }
     } catch (error) {
       console.error('Error editing meal, please try again later.', error)
       return reply
         .status(500)
-        .send({ msg: 'Error editing meal, please try again later.' })
+        .send({ error: 'Error editing meal, please try again later.' })
     }
   })
 
@@ -149,13 +157,73 @@ export const mealsRoutes = async (app: FastifyInstance) => {
       } else {
         return reply
           .status(400)
-          .send({ msg: "Meal doesn't exist, please validate ID." })
+          .send({ error: "Meal doesn't exist, please validate ID." })
       }
     } catch (error) {
       console.error('Error deleting meal, please try again later.', error)
       return reply
         .status(500)
-        .send({ msg: 'Error deleting meal, please try again later.' })
+        .send({ error: 'Error deleting meal, please try again later.' })
+    }
+  })
+
+  app.get('/metrics', retrieveMealMetrics, async (request, reply) => {
+    try {
+      const { userId } = request.cookies
+      const meals = await knex('diet').select().where('user_id', userId)
+      let metrics = {
+        quantity: 0,
+        meals_on_diet: 0,
+        meals_not_on_diet: 0,
+        best_sequence: 0,
+      }
+
+      if (!meals) {
+        return reply.status(400).send({ error: 'No meals registered yet.' })
+      }
+
+      const mealsOnDiet = meals.reduce((acc, currentMeal) => {
+        if (currentMeal.is_diet === 1) {
+          acc += 1
+        }
+
+        return acc
+      }, 0)
+
+      let currentSequence = 0
+      let bestSequence = 0
+
+      const bestDietSequence = meals.reduce((acc, currentMeal) => {
+        if (currentMeal.is_diet === 1) {
+          currentSequence += 1
+        } else {
+          bestSequence = Math.max(bestSequence, currentSequence)
+          currentSequence = 0
+        }
+        return bestSequence
+      }, 0)
+
+      metrics = {
+        quantity: meals.length,
+        meals_on_diet: mealsOnDiet,
+        meals_not_on_diet: meals.length - mealsOnDiet,
+        best_sequence: bestDietSequence,
+      }
+
+      console.log('Quantity of meals:', meals.length)
+      console.log('Meals on Diet:', mealsOnDiet)
+      console.log('Meals Not on Diet:', metrics.meals_not_on_diet)
+      console.log('Best Diet Sequence:', bestDietSequence)
+
+      return metrics
+    } catch (error) {
+      console.error(
+        'Error getting meal details, please try again later.',
+        error,
+      )
+      return reply
+        .status(500)
+        .send({ msg: 'Error getting meal details, please try again later.' })
     }
   })
 }

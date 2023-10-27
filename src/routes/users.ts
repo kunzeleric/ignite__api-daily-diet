@@ -22,7 +22,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
       console.error('Failed retrieving users, try again later.')
       return reply
         .status(500)
-        .send({ msg: 'Something went wrong, please try again later.' })
+        .send({ error: 'Something went wrong, please try again later.' })
     }
   })
 
@@ -42,7 +42,9 @@ export const usersRoutes = async (app: FastifyInstance) => {
       const userExists = users.find((user) => user.email === email)
 
       if (userExists) {
-        return reply.status(400).send('User already exists in database.')
+        return reply
+          .status(400)
+          .send({ error: 'User already exists in database.' })
       } else {
         const hashPassword = await bcrypt.hash(password, 10)
         await knex('users').insert({
@@ -58,7 +60,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
       console.error('Failed to create user, try again later: ', error)
       return reply
         .status(500)
-        .send({ msg: 'Failed to create user, try again later.' })
+        .send({ error: 'Failed to create user, try again later.' })
     }
   })
 
@@ -86,7 +88,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
 
         return reply.status(204).send({ msg: 'User updated successfully!' })
       } else {
-        return reply.status(400).send('User not found.')
+        return reply.status(400).send({ error: 'User not found.' })
       }
     } catch (error) {
       console.error('Failed to update user, try again later.', error)
@@ -114,13 +116,13 @@ export const usersRoutes = async (app: FastifyInstance) => {
 
         return reply.status(204).send({ msg: 'User successfully deleted.' })
       } else {
-        return reply.status(400).send('User not found.')
+        return reply.status(400).send({ error: 'User not found.' })
       }
     } catch (error) {
       console.error('Failed to delete user, try again later.', error)
       return reply
         .status(500)
-        .send({ msg: 'Failed to delete user, try again later.' })
+        .send({ error: 'Failed to delete user, try again later.' })
     }
   })
 
@@ -154,14 +156,14 @@ export const usersRoutes = async (app: FastifyInstance) => {
         } else {
           return reply
             .status(400)
-            .send({ msg: 'User not found! Please try again.' })
+            .send({ error: 'User not found! Please try again.' })
         }
       }
     } catch (error) {
       console.error('Failed to login, please try again later.')
       return reply
         .status(500)
-        .send({ msg: 'Login failed, please try again later.' })
+        .send({ error: 'Login failed, please try again later.' })
     }
   })
 }
