@@ -22,20 +22,6 @@ app.register(fastifySwagger, {
       {
         url: 'http://localhost:8080',
         description: 'The production API server',
-        variables: {
-          username: {
-            default: 'demo',
-            description:
-              'this value is assigned by the service provider, in this example `gigantic-server.com`',
-          },
-          port: {
-            enum: ['8080', '4000'],
-            default: '8080',
-          },
-          basePath: {
-            default: 'v2',
-          },
-        },
       },
     ],
     tags: [
@@ -132,7 +118,13 @@ app.register(fastifySwagger, {
             },
             required: {
               type: 'array',
-              example: ['name', 'descriptions', 'user_id'],
+              example: [
+                'name',
+                'descriptions',
+                'user_id',
+                'calories',
+                'meal_type',
+              ],
               items: {
                 type: 'string',
               },
@@ -158,12 +150,30 @@ app.register(fastifySwagger, {
                     },
                   },
                 },
-                descriptions: {
+                description: {
                   type: 'object',
                   properties: {
                     type: {
                       type: 'string',
                       example: 'string',
+                    },
+                  },
+                },
+                calories: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'number',
+                      example: 1000,
+                    },
+                  },
+                },
+                meal_type: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'string',
+                      example: 'Breakfast',
                     },
                   },
                 },
@@ -214,7 +224,7 @@ app.register(fastifySwagger, {
 app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
   uiConfig: {
-    docExpansion: 'full',
+    docExpansion: 'list',
     deepLinking: false,
   },
   uiHooks: {
