@@ -62,11 +62,12 @@ export const mealsRoutes = async (app: FastifyInstance) => {
         name: z.string(),
         description: z.string(),
         is_diet: z.boolean(),
+        calories: z.number(),
+        meal_type: z.enum(['Breakfast', 'Lunch', 'Dinner', 'Snack']),
       })
 
-      const { name, description, is_diet } = createMealParamsSchema.parse(
-        request.body,
-      )
+      const { name, description, is_diet, calories, meal_type } =
+        createMealParamsSchema.parse(request.body)
 
       const { userId } = request.cookies
 
@@ -75,6 +76,8 @@ export const mealsRoutes = async (app: FastifyInstance) => {
         name,
         description,
         is_diet,
+        calories,
+        meal_type,
         user_id: userId,
       })
 
@@ -98,12 +101,13 @@ export const mealsRoutes = async (app: FastifyInstance) => {
         name: z.string().optional(),
         description: z.string().optional(),
         is_diet: z.boolean().optional(),
+        calories: z.number(),
+        meal_type: z.enum(['Breakfast', 'Lunch', 'Dinner', 'Snack']),
       })
 
       const { id } = editMealParamsSchema.parse(request.params)
-      const { name, description, is_diet } = editMealBodySchema.parse(
-        request.body,
-      )
+      const { name, description, is_diet, calories, meal_type } =
+        editMealBodySchema.parse(request.body)
 
       const meals = await knex('diet').select()
       const mealExists = meals.find((meal) => meal.id === id)
@@ -121,6 +125,8 @@ export const mealsRoutes = async (app: FastifyInstance) => {
           name,
           description,
           is_diet,
+          calories,
+          meal_type,
           updatedAt: formattedUpdatedAt,
         })
 
@@ -176,6 +182,9 @@ export const mealsRoutes = async (app: FastifyInstance) => {
         meals_on_diet: 0,
         meals_not_on_diet: 0,
         best_sequence: 0,
+        total_calories: 0,
+        calories_on_diet: 0,
+        calories_off_diet: 0,
       }
 
       if (!meals) {
@@ -203,18 +212,27 @@ export const mealsRoutes = async (app: FastifyInstance) => {
         return bestSequence
       }, 0)
 
+      const calories = meals.reduce((acc, currentMeal) => {
+        return acc + currentMeal.calories
+      })
+
+      const caloriesOnDiet = meals.reduce((acc, currentMeal) => {
+        if (currentMeal.is_diet === 1) {
+          acc += currentMeal.calories
+        }
+
+        return acc
+      }, 0)
+
       metrics = {
         quantity: meals.length,
         meals_on_diet: mealsOnDiet,
         meals_not_on_diet: meals.length - mealsOnDiet,
         best_sequence: bestDietSequence,
+        total_calories: calories,
+        calories_on_diet: caloriesOnDiet,
+        calories_off_diet: calories - caloriesOnDiet,
       }
-
-      console.log('Quantity of meals:', meals.length)
-      console.log('Meals on Diet:', mealsOnDiet)
-      console.log('Meals Not on Diet:', metrics.meals_not_on_diet)
-      console.log('Best Diet Sequence:', bestDietSequence)
-
       return metrics
     } catch (error) {
       console.error(

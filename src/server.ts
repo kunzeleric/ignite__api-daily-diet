@@ -132,7 +132,13 @@ app.register(fastifySwagger, {
             },
             required: {
               type: 'array',
-              example: ['name', 'descriptions', 'user_id'],
+              example: [
+                'name',
+                'descriptions',
+                'user_id',
+                'calories',
+                'meal_type',
+              ],
               items: {
                 type: 'string',
               },
@@ -154,16 +160,34 @@ app.register(fastifySwagger, {
                   properties: {
                     type: {
                       type: 'string',
-                      example: 'string',
+                      example: 'Meal 01',
                     },
                   },
                 },
-                descriptions: {
+                description: {
                   type: 'object',
                   properties: {
                     type: {
                       type: 'string',
-                      example: 'string',
+                      example: 'A delicious burger with bacon and cheese.',
+                    },
+                  },
+                },
+                calories: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'number',
+                      example: 1000,
+                    },
+                  },
+                },
+                meal_type: {
+                  type: 'object',
+                  properties: {
+                    type: {
+                      type: 'string',
+                      example: 'Breakfast',
                     },
                   },
                 },
@@ -181,7 +205,7 @@ app.register(fastifySwagger, {
                   properties: {
                     type: {
                       type: 'string',
-                      example: 'string',
+                      example: '2023-10-31 20:33:07',
                     },
                     format: {
                       type: 'string',
@@ -194,7 +218,7 @@ app.register(fastifySwagger, {
                   properties: {
                     type: {
                       type: 'string',
-                      example: 'string',
+                      example: '2023-11-04 15:30:28',
                     },
                     format: {
                       type: 'string',

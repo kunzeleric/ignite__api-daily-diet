@@ -83,11 +83,11 @@ export const createMeal = {
       },
     },
     body: {
-      name: {
-        type: 'string',
-      },
+      name: { type: 'string' },
       description: { type: 'string' },
       is_diet: { type: 'boolean' },
+      calories: { type: 'number' },
+      meal_type: { type: 'string ' },
     },
   },
   preHandler: [checkUserIdExists],
@@ -127,6 +127,8 @@ export const updateMeal = {
       name: { type: 'string' },
       description: { type: 'string' },
       is_diet: { type: 'boolean' },
+      calories: { type: 'number' },
+      meal_type: { type: 'string' },
     },
   },
   preHandler: [checkUserIdExists],
@@ -178,6 +180,9 @@ export const retrieveMealMetrics = {
           meals_on_diet: { type: 'integer' },
           meals_not_on_diet: { type: 'integer' },
           best_sequence: { type: 'integer' },
+          total_calories: { type: 'integer' },
+          calories_on_diet: { type: 'integer' },
+          calories_off_diet: { type: 'integer' },
         },
       },
       400: {
