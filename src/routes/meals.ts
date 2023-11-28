@@ -1,7 +1,7 @@
-import { FastifyInstance } from 'fastify'
-import { knex } from '../database'
 import { randomUUID } from 'crypto'
+import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
+import { knex } from '../database'
 import {
   createMeal,
   deleteMeal,
@@ -234,7 +234,7 @@ export const mealsRoutes = async (app: FastifyInstance) => {
         calories_off_diet: calories - caloriesOnDiet,
       }
 
-      return metrics
+      reply.status(200).send({ metrics })
     } catch (error) {
       console.error(
         'Error getting meal details, please try again later.',

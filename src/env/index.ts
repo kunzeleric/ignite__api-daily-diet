@@ -1,8 +1,15 @@
+import { config } from 'dotenv'
 import { z } from 'zod'
-import 'dotenv/config'
+
+if (process.env.NODE_ENV === 'test') {
+  config({ path: '.env.test' })
+} else {
+  config()
+}
 
 const envSchema = z.object({
   DATABASE_URL: z.string(),
+  DATABASE_CLIENT: z.enum(['sqlite', 'pg']).default('sqlite'),
   PORT: z.number().default(8080),
   NODE_ENV: z
     .enum(['development', 'test', 'production'])

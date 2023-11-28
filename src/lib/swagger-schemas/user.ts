@@ -37,10 +37,14 @@ export const createUser = {
     },
     response: {
       201: {
-        description: 'Succesful response',
+        description: 'User created successfully!',
         type: 'object',
         properties: {
-          msg: { type: 'string' },
+          user: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            email: { type: 'string' },
+          },
         },
       },
       400: {
@@ -71,7 +75,6 @@ export const updateUser = {
     body: {
       name: { type: 'string' },
       email: { type: 'string' },
-      password: { type: 'string' },
     },
     response: {
       204: {
@@ -79,6 +82,7 @@ export const updateUser = {
         type: 'object',
         properties: {
           msg: { type: 'string' },
+          user: { type: 'object' },
         },
       },
       400: {

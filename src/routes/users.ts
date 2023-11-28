@@ -1,8 +1,9 @@
-import { FastifyInstance } from 'fastify'
-import { knex } from '../database'
-import { z } from 'zod'
-import { randomUUID } from 'node:crypto'
 import bcrypt from 'bcrypt'
+import { FastifyInstance } from 'fastify'
+import { randomUUID } from 'node:crypto'
+import { z } from 'zod'
+import { Models } from '../@types'
+import { knex } from '../database'
 import {
   createUser,
   deleteUser,
@@ -37,9 +38,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
 
       const { name, email, password } = createUserBodySchema.parse(request.body)
 
-      const users = await knex('users').select('*')
-
-      const userExists = users.find((user) => user.email === email)
+      const userExists = await knex('users').where({ email }).first()
 
       if (userExists) {
         return reply
@@ -47,14 +46,16 @@ export const usersRoutes = async (app: FastifyInstance) => {
           .send({ error: 'User already exists in database.' })
       } else {
         const hashPassword = await bcrypt.hash(password, 10)
-        await knex('users').insert({
-          id: randomUUID(),
-          name,
-          email,
-          password: hashPassword,
-        })
-
-        return reply.status(201).send({ msg: 'User created successfully!' })
+        const user = await knex('users').insert(
+          {
+            id: randomUUID(),
+            name,
+            email,
+            password: hashPassword,
+          },
+          ['id', 'name', 'email'],
+        )
+        return reply.status(201).send({ user: user[0] })
       }
     } catch (error) {
       console.error('Failed to create user, try again later: ', error)
@@ -136,12 +137,15 @@ export const usersRoutes = async (app: FastifyInstance) => {
 
       const { email, password } = loginUserBodyParams.parse(request.body)
 
-      const userFound = await knex('users').where('email', email).select('*')
+      const userFound: Array<Models.User | null> = await knex('users')
+        .where('email', email)
+        .select('*')
       if (userFound[0]) {
         const passwordCheck = await bcrypt.compare(
           password,
           userFound[0].password,
         )
+        // se password for correto
         if (passwordCheck) {
           let userId = request.cookies.userId
           if (!userId) {

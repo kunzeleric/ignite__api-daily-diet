@@ -6,3 +6,4 @@ db/app.db
 
 # Enviroment Variables
 .env
+.env.test
