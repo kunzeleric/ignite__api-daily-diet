@@ -38,9 +38,9 @@ export const mealsRoutes = async (app: FastifyInstance) => {
       const mealExists = meals.find((meal) => meal.id === id)
       if (mealExists) {
         const { userId } = request.cookies
-        const diet = await knex('diet').where({ id, user_id: userId }).first()
+        const meal = await knex('diet').where({ id, user_id: userId }).first()
 
-        return { diet }
+        return reply.status(200).send({ meal })
       } else {
         return reply.status(400).send({
           error: "Meal doesn't exist in database. Try checking the ID",
@@ -59,28 +59,39 @@ export const mealsRoutes = async (app: FastifyInstance) => {
     try {
       const createMealParamsSchema = z.object({
         name: z.string(),
-        description: z.string(),
+        details: z.string(),
         is_diet: z.boolean(),
         calories: z.number(),
         meal_type: z.enum(['Breakfast', 'Lunch', 'Dinner', 'Snack']),
       })
 
-      const { name, description, is_diet, calories, meal_type } =
+      const { name, details, is_diet, calories, meal_type } =
         createMealParamsSchema.parse(request.body)
 
       const { userId } = request.cookies
 
-      await knex('diet').insert({
-        id: randomUUID(),
-        name,
-        description,
-        is_diet,
-        calories,
-        meal_type,
-        user_id: userId,
-      })
+      const meal = await knex('diet').insert(
+        {
+          id: randomUUID(),
+          name,
+          details,
+          is_diet,
+          calories,
+          meal_type,
+          user_id: userId,
+        },
+        [
+          'id',
+          'name',
+          'details',
+          'is_diet',
+          'calories',
+          'meal_type',
+          'user_id',
+        ],
+      )
 
-      return reply.status(201).send({ msg: 'Meal created successfully.' })
+      return reply.status(201).send({ meal: meal[0] })
     } catch (error) {
       console.error('Error creating meal, please try again later.', error)
       return reply
@@ -98,14 +109,14 @@ export const mealsRoutes = async (app: FastifyInstance) => {
 
       const editMealBodySchema = z.object({
         name: z.string().optional(),
-        description: z.string().optional(),
+        details: z.string().optional(),
         is_diet: z.boolean().optional(),
         calories: z.number().optional(),
         meal_type: z.enum(['Breakfast', 'Lunch', 'Dinner', 'Snack']).optional(),
       })
 
       const { id } = editMealParamsSchema.parse(request.params)
-      const { name, description, is_diet, calories, meal_type } =
+      const { name, details, is_diet, calories, meal_type } =
         editMealBodySchema.parse(request.body)
 
       const meals = await knex('diet').select()
@@ -122,7 +133,7 @@ export const mealsRoutes = async (app: FastifyInstance) => {
 
         await knex('diet').where('id', id).update({
           name,
-          description,
+          details,
           is_diet,
           calories,
           meal_type,

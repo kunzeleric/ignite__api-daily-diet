@@ -39,14 +39,13 @@
 - [x] Deve ser possível editar um usuário
 - [x] Permitir que os usuários registrem a quantidade de calorias para cada refeição
 - [x] Permitir que os usuários categorizem suas refeições em grupos como café da manhã, almoço, jantar, lanches, etc
-- [ ] Implementação de testes de integração
-    - [ ] Testes das Rotas de Usuários:
+- [x] Implementação de testes de integração
+    - [x] Testes das Rotas de Usuários:
         - [x] Deve ser possível criar um usuário
         - [x] Deve ser possível logar um usuário
         - [x] Deve ser possível editar um usuário
         - [x] Não deve ser possível criar um usuário com email duplicado
-    - [ ] Testes das Rotas de Refeições
-        - [ ] Deve ser possível cadastrar uma refeição
-        - [ ] Deve ser possível editar uma refeição
-        - [ ] Deve ser possível buscar uma refeição por um ID
-        - [ ] Deve ser possível obter as métricas do usuário
+    - [x] Testes das Rotas de Refeições
+        - [x] Deve ser possível cadastrar uma refeição
+        - [x] Deve ser possível editar uma refeição
+        - [x] Deve ser possível buscar uma refeição por um ID

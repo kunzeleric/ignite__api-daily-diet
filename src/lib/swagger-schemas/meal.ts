@@ -71,7 +71,14 @@ export const createMeal = {
         description: 'Succesful response',
         type: 'object',
         properties: {
-          msg: { type: 'string' },
+          meal: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            is_diet: { type: 'boolean' },
+            calories: { type: 'number' },
+            meal_type: { type: 'string' },
+            user_id: { type: 'number' },
+          },
         },
       },
       500: {
