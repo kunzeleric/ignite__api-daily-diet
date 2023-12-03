@@ -1,4 +1,11 @@
-# Daily Diet API
+# Daily Diet API Challenge
+
+Segundo desafio do curso de Node.js da Rocketseat. 
+
+Consiste na implantação de uma API que permite o usuário a criar conta, editar seus dados e fazer login para adicionar e controlar suas refeições diárias. 
+
+Além disso, o usuário pode também obter métricas de total de calorias, melhor sequência de pratos na dieta, entre outros indicadores.
+
 
 ## Tecnologias
 
@@ -7,6 +14,7 @@
 - Supertest
 - Vitest
 - Knex & SQLite
+- Zod
 
 ### Regras da aplicação
 
@@ -49,3 +57,57 @@
         - [x] Deve ser possível cadastrar uma refeição
         - [x] Deve ser possível editar uma refeição
         - [x] Deve ser possível buscar uma refeição por um ID
+
+## Rodando localmente
+
+Clone o projeto
+
+```bash
+  git clone https://link-para-o-projeto
+```
+
+Entre no diretório do projeto
+
+```bash
+  cd my-project
+```
+
+Instale as dependências
+
+```bash
+  npm install
+```
+
+Inicie o servidor
+
+```bash
+  npm run dev
+```
+
+
+## Documentação da API
+
+Documentação feita no Swagger. Para acessar, rode o projeto localmente com ```npm run dev``` e acesse as rotas para testar.
+
+## Rodando os testes
+
+Para rodar os testes, rode o seguinte comando
+
+```bash
+  npm run test
+```
+
+
+## Aprendizados
+
+- Documentar rotas com Swagger integrado ao Fastify
+- Testes de integração com o Vitest e Supertest
+- Aprofundamento no conhecimento do query builder Knex
+- Estruturação de código e tipagem com TypeScript
+- Melhor entendimento de API's e como tratar e verificar dados e devolver respostas ao cliente
+
+## Melhorias Futuras
+
+- Testes unitários
+- Reestruturação para implementação de princípio SOLID
+- Utilização de Token para identificação do usuário.
